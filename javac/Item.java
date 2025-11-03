@@ -40,4 +40,17 @@ public class Item {
     public String getDetails() {
         return details;
     }
+    public void setQuantity(int quantity) {
+        this.quantity = quantity;
+    }
+    public void setCost(float cost) {
+        this.cost = cost;
+        this.price = cost * this.profitCoefficient;
+    }
+    public void setCalculatedValues(int addedQuantity, float cost){
+        float calculatedCost = ((this.quantity * this.cost) + (addedQuantity * cost))/(addedQuantity + quantity);
+        this.cost = calculatedCost;
+        this.quantity += addedQuantity;
+        this.price = this.cost * this.profitCoefficient;
+    }
 }

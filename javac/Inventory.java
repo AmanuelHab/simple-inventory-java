@@ -15,4 +15,12 @@ public class Inventory {
         }
         return -1;
     }
+    public void displayItem(int index){
+        Item item = allItems.get(index);
+        System.out.println("Name: " + item.getName() + " Quantity: " + item.getQuantity() + "\nCost: " + item.getCost() + " Price: " + item.getPrice() + "\nDetail: " + item.getDetails());
+    }
+    public void updateItem(int index, int quantity, float cost){
+        Item item = allItems.get(index);
+        item.setCalculatedValues(quantity, cost);
+    }
 }
