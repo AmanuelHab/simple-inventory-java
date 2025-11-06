@@ -1,4 +1,4 @@
-package javac;
+package com.Amanuel.inventory.models;
 
 public class Item {
     private String name;
@@ -16,13 +16,13 @@ public class Item {
         DIRECT_PRICE         // manual price setting
     }
 
-    Item(String name, int quantity, float cost){
+    public Item(String name, int quantity, float cost){
         this(name, quantity, cost, 1.0f, PricingStrategy.PROFIT_COEFFICIENT, "");
     }
-    Item(String name, int quantity, float cost, float pricingValue){
+    public Item(String name, int quantity, float cost, float pricingValue){
         this(name, quantity, cost, pricingValue,PricingStrategy.PROFIT_COEFFICIENT, "");
     }
-    Item(String name, int quantity, float cost, float pricingValue, PricingStrategy strategy, String details){
+    public Item(String name, int quantity, float cost, float pricingValue, PricingStrategy strategy, String details){
         this.name = name;
         this.quantity = quantity;
         this.cost = cost;

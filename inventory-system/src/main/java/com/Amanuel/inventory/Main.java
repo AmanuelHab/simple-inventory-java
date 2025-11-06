@@ -1,4 +1,6 @@
-package javac;
+package com.Amanuel.inventory;
+import com.Amanuel.inventory.models.Item;
+import com.Amanuel.inventory.models.Inventory;
 import java.util.Scanner;
 
 public class Main {

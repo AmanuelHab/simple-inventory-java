@@ -1,4 +1,4 @@
-package javac;
+package com.Amanuel.inventory.models;
 import java.util.ArrayList;
 
 public class Inventory {
