@@ -1,20 +1,60 @@
 package com.Amanuel.inventory.models;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 public class Inventory {
-    private ArrayList<Item> allItems = new ArrayList<>();
+    private Map<Integer, Item> allItems;
+    private Map<Integer, ArrayList<Package>> allPackages;
+    private int nextItemId;
 
-    public void addItem(Item item){
-        allItems.add(item);
+    public Inventory(){
+        this.allItems = new HashMap<>();
+        this.allPackages = new HashMap<>();
+        this.nextItemId = 1;
     }
-    public int findItemByName(String name){
-        for (int i = 0; i < allItems.size(); i++){
-            if(allItems.get(i).getName().equalsIgnoreCase(name)){
-                return i;
+    public Item addItem(String name, String details){
+        Item item = new Item(name, details);
+        allItems.put(nextItemId, item);
+        return allItems.get(nextItemId++);
+    }
+    public int getItemId(String name){
+        for(int id: allItems.keySet()){
+            if(name.equals(allItems.get(id).getName())){
+                return id;
             }
         }
         return -1;
     }
+    public Item getItem(int itemId){
+        return allItems.get(itemId);
+    }
+    public boolean itemKnown(int itemId){
+        return allItems.containsKey(itemId);
+    }
+    public void addPackage(int itemId, Package newPackage){
+        if(!allPackages.containsKey(itemId)){
+            allPackages.put(itemId, new ArrayList<>());
+        }
+        allPackages.get(itemId).add(newPackage);
+    }
+    public Item searchItemByName(String name){
+        for (Item item: allItems.values()){
+            if(name.equals(item.getName())){
+                return item;
+            }
+        }
+        return null;
+    }
+    public ArrayList<Package> getPackageList(int itemId){
+        return allPackages.get(itemId);
+    }
+    public void displayItem(Item item){
+        System.out.println("Name: " + item.getName() + 
+        "\tDetails: " + (item.getDetails().equals(" ") || item.getDetails().isEmpty() ? "No details" : item.getDetails()));
+        System.out.println("-----------------------");
+    }
+    /*
     public boolean isEmpty(){
         return allItems.size() == 0 ? true: false;
     }
@@ -22,10 +62,10 @@ public class Inventory {
         Item item = allItems.get(index);
         System.out.println("Name: " + item.getName() + 
                         "\tQuantity: " + item.getQuantity() + 
-                        "\nCost: " + item.getCost() + "ETB" +
-                        "\tPrice: " + item.getPrice() + "ETB" +
+                        "\nCost: " + item.getCost() + " ETB" +
+                        "\tPrice: " + item.getPrice() + " ETB" +
                         "\nPricing Strategy: " + item.getPricingStrategy() +
-                        "\tProfit from one piece: " + item.getProfit() +
+                        "\nProfit from one piece: " + item.getProfit() +
                         "\nDetails: " + (item.getDetails().equals(" ") || item.getDetails().isEmpty() ? "No details" : item.getDetails()));
         System.out.println("-----------------------");
     }
@@ -54,5 +94,6 @@ public class Inventory {
         for(int i = 0; i < allItems.size(); i++){
             displayItem(i);
         }
-    }
+        System.out.println();
+    }*/
 }

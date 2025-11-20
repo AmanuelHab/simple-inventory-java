@@ -1,5 +1,6 @@
 package com.Amanuel.inventory;
 import com.Amanuel.inventory.models.Item;
+import com.Amanuel.inventory.models.Package;
 import com.Amanuel.inventory.models.Inventory;
 import java.util.Scanner;
 
@@ -9,8 +10,8 @@ public class Main {
         Scanner console = new Scanner(System.in);
         
         while(true){
-        System.out.println("=== Inventory Managment System ===");
-        System.out.println("1. Add item\n2. Search item\n3. Edit item\n4. Display all\n5. Exit");
+        System.out.println("==== Inventory Managment System ====");
+        System.out.println("1. Add item\n2. Add package 3. Search item\n4. Edit item\n5. Display all\n6. Exit");
         int choice = console.nextInt();
         console.nextLine();
             switch (choice) {
@@ -18,16 +19,19 @@ public class Main {
                     addItem(inventory, console);
                     break;
                 case 2:
-                    searchItem(inventory, console);
+                    addPackage(inventory, console);
                     break;
                 case 3:
-                    editItem(inventory, console);
+                    searchItem(inventory, console);
                     break;
                 case 4:
+                    editItem(inventory, console);
+                    break;
+                case 5:
                     System.out.println("== Display All ==");
                     inventory.displayAllItems();
                     break;
-                case 5:
+                case 6:
                     console.close();
                     System.out.println("Software Exits!");
                     return;
@@ -38,18 +42,23 @@ public class Main {
         }
     }
     public static void addItem(Inventory inventory, Scanner console){
-        System.out.println("== Add Item ==");
+        System.out.println("=== Add Item ===");
         System.out.print("Enter name: ");
         String name = console.nextLine();
-
-        int index = inventory.findItemByName(name);
-        // Update the item if it already exists
-        if(!inventory.isEmpty() && index != -1){
+        
+        // Add a package if it already exists
+        if(inventory.findItemByName(name) == null){
+            int itemId = inventory.getItemId(name);
             System.out.print("Enter quantity to be added: ");
             int quantity = console.nextInt();
             System.out.print("Enter cost: ");
             float cost = console.nextFloat();
-            inventory.updateItem(index, quantity, cost);
+
+            // Offer choice to accept/decline default pricing strategy
+            System.out.println("Shall the package have the same pricing strategy as the first package? (Y/n): ");
+            char choice = console.next().charAt(0);
+
+            inventory.addPackage(itemId, null);
             return;
         }
 
@@ -59,32 +68,33 @@ public class Main {
         float cost = console.nextFloat();
         console.nextLine();
 
-        Item.PricingStrategy strategy = getPricingStrategy(console); 
+        Package.PricingStrategy strategy = getPricingStrategy(console); 
         float pricingValue = getPricingValue(console, strategy, cost);
+        console.nextLine();
 
         System.out.print("Enter details: ");
         String details = console.nextLine();
-        Item item = new Item(name, quantity, cost, pricingValue, strategy, details);
+        Item item = new Item(name, details);
         inventory.addItem(item);
         System.out.println("Item added successfully!");
     }
-    public static Item.PricingStrategy getPricingStrategy(Scanner console){
+    public static Package.PricingStrategy getPricingStrategy(Scanner console){
         System.out.println("\nChoose pricing strategy:");
-        System.out.println("1. Profit Coefficient (price = cost × coefficient)");
+        System.out.println("1. Profit Coefficient (price = cost x coefficient)");
         System.out.println("2. Profit Margin (price = cost + fixed profit)");
         System.out.println("3. Direct Price (set price directly)");
         System.out.print("Choose option (1-3): ");
         int choice = console.nextInt();
         switch(choice){
-            case 1: return Item.PricingStrategy.PROFIT_COEFFICIENT;
-            case 2: return Item.PricingStrategy.PROFIT_MARGIN;
-            case 3: return Item.PricingStrategy.DIRECT_PRICE;
+            case 1: return Package.PricingStrategy.PROFIT_COEFFICIENT;
+            case 2: return Package.PricingStrategy.PROFIT_MARGIN;
+            case 3: return Package.PricingStrategy.DIRECT_PRICE;
             default:
                 System.out.println("Invalid choice, using profit coefficient");
-                return Item.PricingStrategy.PROFIT_COEFFICIENT;
+                return Package.PricingStrategy.PROFIT_COEFFICIENT;
         }
     }
-    public static float getPricingValue(Scanner console, Item.PricingStrategy strategy, float cost){
+    public static float getPricingValue(Scanner console, Package.PricingStrategy strategy, float cost){
         switch (strategy) {
             case PROFIT_COEFFICIENT: 
                 System.out.print("Enter profit coefficient (E.g 1.5 for 50% profit): ");
@@ -114,18 +124,18 @@ public class Main {
         }
     }
     public static void searchItem(Inventory inventory, Scanner console){
-        System.out.println("== Search Item ==");
+        System.out.println("=== Search Item ===");
         System.out.print("Enter name: ");
         String search = console.nextLine();
-        int i = inventory.findItemByName(search);
-        if(i == -1){
+        Item item = inventory.searchItemByName(search);
+        if(item == null){
             System.out.println("Item not Found!");
             return;
         } 
-        inventory.displayItem(i);
+        inventory.displayItem(item);
     }
     public static void editItem(Inventory inventory, Scanner console){
-        System.out.println("== Edit Item ==");
+        System.out.println("=== Edit Item ===");
         System.out.print("Enter name: ");
         String edit = console.nextLine();
         int j = inventory.findItemByName(edit);
@@ -134,18 +144,20 @@ public class Main {
             return;
         }
         inventory.displayItem(j);
-        System.out.println("== Edit Menu ==");
-        System.out.println("1.Edit name\n2. Edit details\n3. Edit pricing\n4. Return");
+        System.out.println("=== Edit Menu ===");
+        System.out.println("1. Edit name\n2. Edit details\n3. Edit pricing\n4. Return");
         int editChoice = console.nextInt();
         switch(editChoice){
             case 1:
                 System.out.println("Enter name: ");
+                console.nextLine();
                 String editedName = console.next();
                 inventory.updateItemName(j, editedName);
                 System.out.println("Name changed.");
                 break;
             case 2:
                 System.out.println("Enter details: ");
+                console.nextLine();
                 String newDetails = console.next();
                 inventory.updateItemDetails(j, newDetails);
                 System.out.println("Updated details.");
@@ -161,7 +173,7 @@ public class Main {
         }
     }
     public static void editItemPricing(Inventory inventory, Scanner console, int index){
-        System.out.println("== Edit Pricing ==");
+        System.out.println("=== Edit Pricing ===");
         Item.PricingStrategy newStrategy = getPricingStrategy(console);
         float newPricingValue = getPricingValue(console, newStrategy, index);
 
