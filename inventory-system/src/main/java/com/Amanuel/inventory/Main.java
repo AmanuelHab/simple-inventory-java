@@ -1,7 +1,8 @@
 package com.Amanuel.inventory;
 import com.Amanuel.inventory.models.Item;
 import com.Amanuel.inventory.models.Package;
-import com.Amanuel.inventory.models.Inventory;
+import com.Amanuel.inventory.services.Inventory;
+
 import java.util.Scanner;
 
 public class Main {
@@ -11,7 +12,7 @@ public class Main {
         
         while(true){
         System.out.println("==== Inventory Managment System ====");
-        System.out.println("1. Add item\n2. Add package 3. Search item\n4. Edit item\n5. Display all\n6. Exit");
+        System.out.println("1. Add item\n2. Add package\n3. Display all items\n4. Display all packages\n5. Exit");
         int choice = console.nextInt();
         console.nextLine();
             switch (choice) {
@@ -22,18 +23,15 @@ public class Main {
                     addPackage(inventory, console);
                     break;
                 case 3:
-                    searchItem(inventory, console);
-                    break;
-                case 4:
-                    editItem(inventory, console);
-                    break;
-                case 5:
-                    System.out.println("== Display All ==");
                     inventory.displayAllItems();
                     break;
-                case 6:
-                    console.close();
+                case 4:
+                    inventory.displayAllPackages();
+                    break;
+                case 5:
                     System.out.println("Software Exits!");
+                    console.nextLine();
+                    console.close();
                     return;
                 default:
                     System.out.println("Invalid choice!");
@@ -42,41 +40,43 @@ public class Main {
         }
     }
     public static void addItem(Inventory inventory, Scanner console){
-        System.out.println("=== Add Item ===");
+        System.out.println("==== Add Item ====");
         System.out.print("Enter name: ");
         String name = console.nextLine();
-        
-        // Add a package if it already exists
-        if(inventory.findItemByName(name) == null){
-            int itemId = inventory.getItemId(name);
-            System.out.print("Enter quantity to be added: ");
-            int quantity = console.nextInt();
-            System.out.print("Enter cost: ");
-            float cost = console.nextFloat();
-
-            // Offer choice to accept/decline default pricing strategy
-            System.out.println("Shall the package have the same pricing strategy as the first package? (Y/n): ");
-            char choice = console.next().charAt(0);
-
-            inventory.addPackage(itemId, null);
+        if(inventory.getItemId(name) != -1){
+            System.out.println("Item already exists.");
             return;
         }
-
+        inventory.addItem(name);
+        System.out.println("Item added successfully!");
+    }
+    public static void addPackage(Inventory inventory, Scanner console){
+        System.out.println("Enter item name: ");
+        String name = console.nextLine();
+        int itemId = inventory.getItemId(name);
+        if(itemId == -1){
+            System.out.println("Item doesn't exist!");
+            return;
+    }
         System.out.print("Enter quantity: ");
         int quantity = console.nextInt();
         System.out.print("Enter cost: ");
         float cost = console.nextFloat();
-        console.nextLine();
+        /* 
+        // Offer choice to accept/decline default pricing strategy
+        System.out.println("Shall the package have the same pricing strategy as the first package? (Y/n): ");
+        char choice = console.next().charAt(0);
 
+            inventory.addPackage(itemId, null);
+            return;
+        */
         Package.PricingStrategy strategy = getPricingStrategy(console); 
         float pricingValue = getPricingValue(console, strategy, cost);
         console.nextLine();
 
-        System.out.print("Enter details: ");
-        String details = console.nextLine();
-        Item item = new Item(name, details);
-        inventory.addItem(item);
-        System.out.println("Item added successfully!");
+        Package pac = new Package(itemId, quantity, cost, pricingValue, strategy);
+        inventory.addPackage(itemId, pac);
+        System.out.println("Package added successfully!");
     }
     public static Package.PricingStrategy getPricingStrategy(Scanner console){
         System.out.println("\nChoose pricing strategy:");
@@ -122,7 +122,7 @@ public class Main {
             default:
                 return 1.0f;
         }
-    }
+    }/* 
     public static void searchItem(Inventory inventory, Scanner console){
         System.out.println("=== Search Item ===");
         System.out.print("Enter name: ");
@@ -145,7 +145,7 @@ public class Main {
         }
         inventory.displayItem(j);
         System.out.println("=== Edit Menu ===");
-        System.out.println("1. Edit name\n2. Edit details\n3. Edit pricing\n4. Return");
+        System.out.println("1. Edit name\n2. Edit pricing\n3. Return");
         int editChoice = console.nextInt();
         switch(editChoice){
             case 1:
@@ -155,17 +155,10 @@ public class Main {
                 inventory.updateItemName(j, editedName);
                 System.out.println("Name changed.");
                 break;
-            case 2:
-                System.out.println("Enter details: ");
-                console.nextLine();
-                String newDetails = console.next();
-                inventory.updateItemDetails(j, newDetails);
-                System.out.println("Updated details.");
-                break;
-            case 3: 
+            case 2: 
                 editItemPricing(inventory, console, j);
                 break;
-            case 4:
+            case 3:
                 break;
             default:
                 System.out.println("Invalid choice!");
@@ -174,10 +167,10 @@ public class Main {
     }
     public static void editItemPricing(Inventory inventory, Scanner console, int index){
         System.out.println("=== Edit Pricing ===");
-        Item.PricingStrategy newStrategy = getPricingStrategy(console);
+        Package.PricingStrategy newStrategy = getPricingStrategy(console);
         float newPricingValue = getPricingValue(console, newStrategy, index);
 
         inventory.updateItemPricing(index, newStrategy, newPricingValue);
         System.out.println("Pricing updated!");
-    }
+    }*/
 }

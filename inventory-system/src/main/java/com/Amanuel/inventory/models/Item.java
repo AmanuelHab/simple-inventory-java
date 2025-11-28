@@ -1,29 +1,25 @@
 package com.Amanuel.inventory.models;
 
 public class Item {
+    private static int nextId = 1;
+
+    private final int itemId;
     private String name;
-    private String details;
 
     public Item(String name){
-        this(name, "");
+        setName(name);
+        this.itemId = nextId++;
     }
-    public Item(String name, String details){
-        this.name = name;
-        this.details = details;
+    public int getItemId() {
+        return itemId;
     }
     public String getName() {
         return name;
-    }
-    public String getDetails() {
-        return details;
     }
     public void setName(String name) {
         if (name == null || name.trim().isEmpty()){
             throw new IllegalArgumentException("Item name cannot be null or empty.");
         }
         this.name = name;
-    }
-    public void setDetails(String details) {
-        this.details = details != null ? details : "";
     }
 }
