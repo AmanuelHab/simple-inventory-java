@@ -106,7 +106,6 @@ public class Package {
     public float getTotalCost(){
         return cost * quantity;
     }
-    public float getTotalProfit(){
         return (price - cost) * quantity;
     }
     public void mergePackages(Package package1, Package package2){
